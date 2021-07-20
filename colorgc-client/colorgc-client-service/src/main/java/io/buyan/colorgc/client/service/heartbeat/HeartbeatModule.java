@@ -42,6 +42,7 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
 
     @Override
     public void statusChanged(GRPCChannelStatus status) {
+        log.error("连接状态发生变化");
         if (GRPCChannelStatus.CONNECTED.equals(status)) {
             Channel channel = ModuleManager.INSTANCE.findModule(GRPCChannelModule.class).getChannel();
             heartbeatServiceBlockingStub = HeartbeatServiceGrpc.newBlockingStub(channel);
@@ -74,6 +75,7 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
 
     @Override
     public void run() {
+        long begin = System.currentTimeMillis();
         if (GRPCChannelStatus.CONNECTED.equals(channelStatus)) {
             if (null != heartbeatServiceBlockingStub) {
                 try {
@@ -83,7 +85,7 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
                             .setProcessNo(OSUtils.getProcessNo())
                             .build();
                     heartbeatServiceBlockingStub
-                            .withDeadlineAfter(10, TimeUnit.SECONDS)
+                            .withDeadlineAfter(1, TimeUnit.SECONDS)
                             .heartbeat(heartbeatRequest);
                 } catch (Throwable t) {
                     log.error("Heartbeat Failed.", t);
@@ -91,6 +93,7 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
                 }
             }
         }
+        log.info("耗时：{}", System.currentTimeMillis() - begin);
     }
 
     @Override
