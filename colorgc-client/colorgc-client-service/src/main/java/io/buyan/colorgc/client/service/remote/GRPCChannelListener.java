@@ -1,4 +1,4 @@
-package io.buyan.colorgc.client.service.channel;
+package io.buyan.colorgc.client.service.remote;
 
 /**
  * GRPC 连接状态监听器

@@ -21,4 +21,14 @@ public class Config {
      */
     public static Integer RECONNECT_COUNT;
 
+    /**
+     * 心跳周期
+     */
+    public static Long HEARTBEAT_PERIOD;
+
+    /**
+     * 当前节点的服务名称
+     */
+    public static String SERVICE_NAME;
+
 }

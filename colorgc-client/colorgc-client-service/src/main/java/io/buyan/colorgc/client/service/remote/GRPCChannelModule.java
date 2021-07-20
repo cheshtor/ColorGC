@@ -1,9 +1,12 @@
-package io.buyan.colorgc.client.service.channel;
+package io.buyan.colorgc.client.service.remote;
 
 
 import io.buyan.colorgc.client.service.Module;
 import io.buyan.colorgc.client.service.conf.Config;
 import io.buyan.colorgc.common.utils.StringUtils;
+import io.grpc.Channel;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -67,7 +70,7 @@ public class GRPCChannelModule implements Module, Runnable {
         }
         serverList = Arrays.asList(Config.SERVER_LIST.split(","));
         connectStatusCheckFuture = Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(this, 0, 1000, TimeUnit.MICROSECONDS);
+                .scheduleAtFixedRate(this, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -107,6 +110,22 @@ public class GRPCChannelModule implements Module, Runnable {
     }
 
     /**
+     * 获取 GRPC 原生 Channel
+     * @return GRPC 原生 Channel
+     */
+    public Channel getChannel() {
+        return this.channel.getChannel();
+    }
+
+    /**
+     * 添加 GRPC 连接状态监听器
+     * @param listener GRPC 连接状态监听器
+     */
+    public void addChannelListener(GRPCChannelListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
      * 通知连接状态变更
      * @param status GRPC 连接状态
      */
@@ -129,5 +148,48 @@ public class GRPCChannelModule implements Module, Runnable {
             selectedIndex.set(-1);
         }
         return selectedIndex.incrementAndGet();
+    }
+
+    public void reportError(Throwable throwable) {
+        if (isNetworkError(throwable)) {
+            reconnect = true;
+            notify(GRPCChannelStatus.DISCONNECTED);
+        }
+    }
+
+    /**
+     * 检查是否为网络相关异常
+     * @param throwable 异常信息
+     * @return true 网络相关异常 false 非网络相关异常
+     */
+    private boolean isNetworkError(Throwable throwable) {
+        if (throwable instanceof StatusRuntimeException) {
+            StatusRuntimeException statusRuntimeException = (StatusRuntimeException) throwable;
+            return statusEquals(
+                    statusRuntimeException.getStatus(), Status.UNAVAILABLE, Status.PERMISSION_DENIED,
+                    Status.UNAUTHENTICATED, Status.RESOURCE_EXHAUSTED, Status.UNKNOWN
+            );
+        }
+        return false;
+    }
+
+    /**
+     * 判断指定状态是否存在于状态列表中
+     * @param source 指定状态
+     * @param potentialStatus 状态列表
+     * @return true 存在 false 不存在
+     */
+    public boolean statusEquals(Status source, Status... potentialStatus) {
+        for (Status status : potentialStatus) {
+            if (source.getCode() == status.getCode()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int priority() {
+        return 1;
     }
 }

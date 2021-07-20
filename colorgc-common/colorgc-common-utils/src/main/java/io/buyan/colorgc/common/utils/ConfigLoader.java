@@ -16,7 +16,6 @@ public class ConfigLoader {
         try {
             Properties properties = new Properties();
             properties.load(propertiesStream);
-            T config = configClass.newInstance();
             if (properties.isEmpty()) {
                 return;
             }
@@ -42,7 +41,7 @@ public class ConfigLoader {
                     if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
                         fieldValue = Boolean.valueOf(fieldValue.toString());
                     }
-                    configField.set(config, fieldValue);
+                    configField.set(null, fieldValue);
                 }
             }
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 package io.buyan.colorgc.client.service;
 
 /**
- * {Description}
+ * 服务模块
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19
@@ -15,5 +15,7 @@ public interface Module {
     void onComplete() throws Throwable;
 
     void shutdown() throws Throwable;
+
+    int priority();
 
 }

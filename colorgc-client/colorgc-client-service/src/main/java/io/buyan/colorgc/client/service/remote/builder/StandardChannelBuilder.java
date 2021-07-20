@@ -1,4 +1,4 @@
-package io.buyan.colorgc.client.service.channel.builder;
+package io.buyan.colorgc.client.service.remote.builder;
 
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.internal.DnsNameResolverProvider;

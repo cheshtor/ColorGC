@@ -1,6 +1,6 @@
-package io.buyan.colorgc.client.service.channel;
+package io.buyan.colorgc.client.service.remote;
 
-import io.buyan.colorgc.client.service.channel.builder.StandardChannelBuilder;
+import io.buyan.colorgc.client.service.remote.builder.StandardChannelBuilder;
 import io.grpc.Channel;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;

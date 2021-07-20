@@ -1,0 +1,2 @@
+io.buyan.colorgc.client.service.remote.GRPCChannelModule
+io.buyan.colorgc.client.service.heartbeat.HeartbeatModule

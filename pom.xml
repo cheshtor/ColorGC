@@ -11,6 +11,7 @@
         <module>colorgc-protocol</module>
         <module>colorgc-client</module>
         <module>colorgc-common</module>
+        <module>colorgc-server</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -51,6 +52,12 @@
             <dependency>
                 <groupId>io.buyan</groupId>
                 <artifactId>colorgc-client-service</artifactId>
+                <version>${version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.buyan</groupId>
+                <artifactId>colorgc-server-service</artifactId>
                 <version>${version}</version>
             </dependency>
 
