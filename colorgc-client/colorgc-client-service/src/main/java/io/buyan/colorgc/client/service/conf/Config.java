@@ -31,4 +31,9 @@ public class Config {
      */
     public static String SERVICE_NAME;
 
+    /**
+     * GC 信息上周频率
+     */
+    public static Long GC_REPORT_PERIOD;
+
 }

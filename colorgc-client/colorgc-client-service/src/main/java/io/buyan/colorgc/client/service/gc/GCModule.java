@@ -3,13 +3,14 @@ package io.buyan.colorgc.client.service.gc;
 import com.sun.management.GarbageCollectionNotificationInfo;
 import io.buyan.colorgc.client.service.Module;
 import io.buyan.colorgc.client.service.ModuleManager;
+import io.buyan.colorgc.client.service.conf.Config;
 import io.buyan.colorgc.client.service.remote.GRPCChannelListener;
 import io.buyan.colorgc.client.service.remote.GRPCChannelModule;
 import io.buyan.colorgc.client.service.remote.GRPCChannelStatus;
 import io.buyan.colorgc.common.utils.JsonUtils;
-import io.buyan.colorgc.protocol.gc.GCInfoServiceGrpc;
-import io.buyan.colorgc.protocol.gc.GCNotification;
-import io.buyan.colorgc.protocol.gc.GCRecords;
+import io.buyan.colorgc.protocol.gc.GCBatch;
+import io.buyan.colorgc.protocol.gc.GCDetails;
+import io.buyan.colorgc.protocol.gc.GCReportServiceGrpc;
 import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +18,7 @@ import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
 import java.lang.management.GarbageCollectorMXBean;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -37,7 +39,7 @@ public class GCModule implements Module, GRPCChannelListener, Runnable {
     /**
      * GC 信息缓存
      */
-    private LinkedBlockingQueue<GarbageCollectionNotificationInfo> cache;
+    private LinkedBlockingQueue<GCInfoDecoration> cache;
 
     /**
      * 发送 GC 信息定时任务
@@ -52,27 +54,28 @@ public class GCModule implements Module, GRPCChannelListener, Runnable {
     /**
      * GC 信息发送请求
      */
-    private volatile GCInfoServiceGrpc.GCInfoServiceBlockingStub stub;
+    private volatile GCReportServiceGrpc.GCReportServiceBlockingStub stub;
 
     @Override
     public void prepare() throws Throwable {
         cache = new LinkedBlockingQueue<>(1000);
         ModuleManager.INSTANCE.findModule(GRPCChannelModule.class).addChannelListener(this);
 
-        List<GarbageCollectorMXBean> gcbeans = java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
-        for (GarbageCollectorMXBean gcbean : gcbeans) {
-            NotificationEmitter emitter = (NotificationEmitter) gcbean;
+        List<GarbageCollectorMXBean> gcBeans = java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean gcBean : gcBeans) {
+            NotificationEmitter emitter = (NotificationEmitter) gcBean;
             NotificationListener listener = (notification, handback) -> {
-                if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
+                if (GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION.equals(notification.getType())) {
                     GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-                    offer(info);
+                    GCInfoDecoration decoration = new GCInfoDecoration(info, gcBean.getName(), gcBean.getMemoryPoolNames());
+                    offer(decoration);
                 }
             };
             emitter.addNotificationListener(listener, null, null);
         }
     }
 
-    private void offer(GarbageCollectionNotificationInfo info) {
+    private void offer(GCInfoDecoration info) {
         if (!cache.offer(info)) {
             cache.poll();
             cache.offer(info);
@@ -82,7 +85,7 @@ public class GCModule implements Module, GRPCChannelListener, Runnable {
     @Override
     public void boot() throws Throwable {
         dataSendFuture = Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(this, 0, 1000, TimeUnit.MILLISECONDS);
+                .scheduleAtFixedRate(this, 0, Config.GC_REPORT_PERIOD, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class GCModule implements Module, GRPCChannelListener, Runnable {
     public void statusChanged(GRPCChannelStatus status) {
         if (GRPCChannelStatus.CONNECTED.equals(status)) {
             Channel channel = ModuleManager.INSTANCE.findModule(GRPCChannelModule.class).getChannel();
-            stub = GCInfoServiceGrpc.newBlockingStub(channel);
+            stub = GCReportServiceGrpc.newBlockingStub(channel);
         } else {
             stub = null;
         }
@@ -116,22 +119,24 @@ public class GCModule implements Module, GRPCChannelListener, Runnable {
         if (GRPCChannelStatus.CONNECTED.equals(channelStatus)) {
             if (null != stub) {
                 try {
-                    List<GarbageCollectionNotificationInfo> buffer = new LinkedList<>();
+                    List<GCInfoDecoration> buffer = new LinkedList<>();
                     cache.drainTo(buffer);
                     if (!buffer.isEmpty()) {
-                        List<GCNotification> list = buffer.stream()
-                                .map(info -> GCNotification.newBuilder()
-                                        .setGcName(info.getGcName())
-                                        .setGcCause(info.getGcCause())
-                                        .setGcAction(info.getGcAction())
-                                        .setGcInfo(JsonUtils.obj2String(info))
+                        List<GCDetails> list = buffer.stream()
+                                .map(info -> GCDetails.newBuilder()
+                                        .setBeanName(info.getBeanName())
+                                        .addAllPoolNames(Arrays.asList(info.getPoolNames()))
+                                        .setGcName(info.getInfo().getGcName())
+                                        .setGcAction(info.getInfo().getGcAction())
+                                        .setGcCause(info.getInfo().getGcCause())
+                                        .setGcInfo(JsonUtils.obj2String(info.getInfo()))
                                         .build())
                                 .collect(Collectors.toList());
-                        GCRecords records = GCRecords.newBuilder().addAllRecords(list).build();
-                        stub.report(records);
+                        GCBatch batch = GCBatch.newBuilder().addAllRows(list).build();
+                        stub.report(batch);
                     }
                 } catch (Throwable t) {
-                    log.error("Send GCInfo Failed.", t);
+                    log.error("Report GCNotification Failed.", t);
                     ModuleManager.INSTANCE.findModule(GRPCChannelModule.class).reportError(t);
                 }
             }

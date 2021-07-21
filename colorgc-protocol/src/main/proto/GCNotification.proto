@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.buyan.colorgc.protocol.gc";
+
+import "common/Common.proto";
+
+message GCDetails {
+  string beanName = 1;
+  repeated string poolNames = 2;
+  string gcName = 3;
+  string gcAction = 4;
+  string gcCause = 5;
+  string gcInfo = 6;
+}
+
+message GCBatch {
+  repeated GCDetails rows = 1;
+}
+
+service GCReportService {
+  rpc report (GCBatch) returns (Empty);
+}
