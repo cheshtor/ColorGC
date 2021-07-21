@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.buyan.colorgc.protocol.gc";
+
+import "common/Common.proto";
+
+message GCNotification {
+  string gcName = 1;
+  string gcAction = 2;
+  string gcCause = 3;
+  string gcInfo = 4;
+}
+
+message GCRecords {
+  repeated GCNotification records = 1;
+}
+
+service GCInfoService {
+  rpc report (GCRecords) returns (Empty);
+}

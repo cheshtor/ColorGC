@@ -7,8 +7,8 @@ import io.buyan.colorgc.client.service.remote.GRPCChannelListener;
 import io.buyan.colorgc.client.service.remote.GRPCChannelModule;
 import io.buyan.colorgc.client.service.remote.GRPCChannelStatus;
 import io.buyan.colorgc.common.utils.OSUtils;
-import io.buyan.colorgc.protocol.HeartbeatRequest;
-import io.buyan.colorgc.protocol.HeartbeatServiceGrpc;
+import io.buyan.colorgc.protocol.heartbeat.HeartbeatRequest;
+import io.buyan.colorgc.protocol.heartbeat.HeartbeatServiceGrpc;
 import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
 

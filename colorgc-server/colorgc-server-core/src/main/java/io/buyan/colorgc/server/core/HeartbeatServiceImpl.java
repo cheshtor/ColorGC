@@ -1,8 +1,8 @@
 package io.buyan.colorgc.server.core;
 
-import io.buyan.colorgc.protocol.HeartbeatRequest;
-import io.buyan.colorgc.protocol.HeartbeatServiceGrpc;
 import io.buyan.colorgc.protocol.common.Empty;
+import io.buyan.colorgc.protocol.heartbeat.HeartbeatRequest;
+import io.buyan.colorgc.protocol.heartbeat.HeartbeatServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
