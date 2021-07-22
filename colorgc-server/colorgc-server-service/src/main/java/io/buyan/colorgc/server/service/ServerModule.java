@@ -8,4 +8,14 @@ package io.buyan.colorgc.server.service;
  */
 public interface ServerModule {
 
+    void prepare() throws Throwable;
+
+    void boot() throws Throwable;
+
+    void onComplete() throws Throwable;
+
+    void shutdown() throws Throwable;
+
+    int priority();
+
 }

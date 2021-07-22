@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 
 /**
- * {Description}
+ * 配置信息加载器
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19

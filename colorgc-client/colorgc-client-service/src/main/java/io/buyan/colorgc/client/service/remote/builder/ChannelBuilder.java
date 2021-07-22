@@ -3,7 +3,7 @@ package io.buyan.colorgc.client.service.remote.builder;
 import io.grpc.ManagedChannelBuilder;
 
 /**
- * {Description}
+ * GRPC 连接构造器
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19

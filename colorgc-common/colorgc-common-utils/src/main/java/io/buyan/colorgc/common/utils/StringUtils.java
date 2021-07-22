@@ -1,7 +1,7 @@
 package io.buyan.colorgc.common.utils;
 
 /**
- * {Description}
+ * 字符串工具类
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19

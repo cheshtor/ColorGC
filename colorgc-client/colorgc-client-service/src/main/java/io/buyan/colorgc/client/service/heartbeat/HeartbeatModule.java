@@ -75,7 +75,6 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
 
     @Override
     public void run() {
-        long begin = System.currentTimeMillis();
         if (GRPCChannelStatus.CONNECTED.equals(channelStatus)) {
             if (null != heartbeatServiceBlockingStub) {
                 try {
@@ -93,7 +92,6 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
                 }
             }
         }
-        log.info("耗时：{}", System.currentTimeMillis() - begin);
     }
 
     @Override

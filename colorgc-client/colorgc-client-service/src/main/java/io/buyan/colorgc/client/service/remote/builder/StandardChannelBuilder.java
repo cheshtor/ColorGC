@@ -4,7 +4,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.internal.DnsNameResolverProvider;
 
 /**
- * {Description}
+ * 明文传输 GRPC 连接构造器
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19

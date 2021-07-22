@@ -5,7 +5,7 @@ import io.buyan.colorgc.common.utils.ConfigLoader;
 import java.io.InputStream;
 
 /**
- * {Description}
+ * 配置信息初始化工具
  *
  * @author Pengyu Gan
  * CreateDate 2021/7/19
