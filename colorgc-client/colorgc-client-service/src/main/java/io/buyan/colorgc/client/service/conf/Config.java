@@ -11,6 +11,10 @@ import lombok.Data;
 @Data
 public class Config {
 
+    public static class NodeInfo {
+        public static String SERVICE_CODE = null;
+    }
+
     /**
      * 服务端地址列表，以逗号分隔
      */

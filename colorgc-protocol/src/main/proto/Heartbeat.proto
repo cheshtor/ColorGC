@@ -11,6 +11,12 @@ message HeartbeatRequest {
   int32 processNo = 3;
 }
 
+message HeartbeatResponse {
+  string ip = 1;
+  int32 processNo = 2;
+  string serviceCode = 3;
+}
+
 service HeartbeatService {
-  rpc heartbeat (HeartbeatRequest) returns (Empty);
+  rpc heartbeat (HeartbeatRequest) returns (HeartbeatResponse);
 }

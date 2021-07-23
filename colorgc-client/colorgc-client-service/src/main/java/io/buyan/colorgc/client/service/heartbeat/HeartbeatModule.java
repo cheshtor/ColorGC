@@ -7,7 +7,9 @@ import io.buyan.colorgc.client.service.remote.GRPCChannelListener;
 import io.buyan.colorgc.client.service.remote.GRPCChannelModule;
 import io.buyan.colorgc.client.service.remote.GRPCChannelStatus;
 import io.buyan.colorgc.common.utils.OSUtils;
+import io.buyan.colorgc.common.utils.StringUtils;
 import io.buyan.colorgc.protocol.heartbeat.HeartbeatRequest;
+import io.buyan.colorgc.protocol.heartbeat.HeartbeatResponse;
 import io.buyan.colorgc.protocol.heartbeat.HeartbeatServiceGrpc;
 import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -78,14 +80,21 @@ public class HeartbeatModule implements Module, GRPCChannelListener, Runnable {
         if (GRPCChannelStatus.CONNECTED.equals(channelStatus)) {
             if (null != heartbeatServiceBlockingStub) {
                 try {
+                    String ip = OSUtils.getIPV4();
+                    int processNo = OSUtils.getProcessNo();
                     HeartbeatRequest heartbeatRequest = HeartbeatRequest.newBuilder()
                             .setServiceName(Config.SERVICE_NAME)
-                            .setIp(OSUtils.getIPV4())
-                            .setProcessNo(OSUtils.getProcessNo())
+                            .setIp(ip)
+                            .setProcessNo(processNo)
                             .build();
-                    heartbeatServiceBlockingStub
+                    HeartbeatResponse response = heartbeatServiceBlockingStub
                             .withDeadlineAfter(1, TimeUnit.SECONDS)
                             .heartbeat(heartbeatRequest);
+                    if (StringUtils.isEmpty(Config.NodeInfo.SERVICE_CODE)) {
+                        if (ip.equals(response.getIp()) && processNo == response.getProcessNo()) {
+                            Config.NodeInfo.SERVICE_CODE = response.getServiceCode();
+                        }
+                    }
                 } catch (Throwable t) {
                     log.error("Heartbeat Failed.", t);
                     ModuleManager.INSTANCE.findModule(GRPCChannelModule.class).reportError(t);

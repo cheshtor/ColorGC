@@ -1,10 +1,6 @@
 package io.buyan.colorgc.server.service.gc;
 
-import io.buyan.colorgc.protocol.common.Empty;
-import io.buyan.colorgc.protocol.gc.GCBatch;
-import io.buyan.colorgc.protocol.gc.GCReportServiceGrpc;
 import io.buyan.colorgc.server.service.ServerModule;
-import io.grpc.stub.StreamObserver;
 
 /**
  * {Description}
@@ -12,7 +8,7 @@ import io.grpc.stub.StreamObserver;
  * @author Pengyu Gan
  * CreateDate 2021/7/22
  */
-public class GCModule extends GCReportServiceGrpc.GCReportServiceImplBase implements ServerModule {
+public class GCServerModule implements ServerModule {
 
     @Override
     public void prepare() throws Throwable {
@@ -39,8 +35,4 @@ public class GCModule extends GCReportServiceGrpc.GCReportServiceImplBase implem
         return 0;
     }
 
-    @Override
-    public void report(GCBatch request, StreamObserver<Empty> responseObserver) {
-        super.report(request, responseObserver);
-    }
 }

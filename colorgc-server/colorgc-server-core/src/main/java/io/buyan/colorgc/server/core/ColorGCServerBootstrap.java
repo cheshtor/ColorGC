@@ -15,8 +15,8 @@ public class ColorGCServerBootstrap {
 
     public static void main(String[] args) throws Exception {
         Server server = ServerBuilder.forPort(8899)
-                .addService(new HeartbeatServiceImpl())
-                .addService(new GCInfoServiceImpl())
+//                .addService(new HeartbeatServiceImpl())
+//                .addService(new GCInfoServiceImpl())
                 .build()
                 .start();
         CountDownLatch latch = new CountDownLatch(1);
