@@ -3,22 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>colorgc</artifactId>
+        <artifactId>server-storage</artifactId>
         <groupId>io.buyan</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>colorgc-server</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>server-core</module>
-        <module>server-service</module>
-        <module>server-storage</module>
-    </modules>
+    <artifactId>server-storage-es</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

@@ -12,8 +12,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>colorgc-client-core</module>
-        <module>colorgc-client-service</module>
+        <module>client-core</module>
+        <module>client-service</module>
     </modules>
 
     <properties>

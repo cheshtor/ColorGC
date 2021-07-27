@@ -51,19 +51,19 @@
 
             <dependency>
                 <groupId>io.buyan</groupId>
-                <artifactId>colorgc-common-utils</artifactId>
+                <artifactId>common-utils</artifactId>
                 <version>${version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.buyan</groupId>
-                <artifactId>colorgc-client-service</artifactId>
+                <artifactId>client-service</artifactId>
                 <version>${version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.buyan</groupId>
-                <artifactId>colorgc-server-service</artifactId>
+                <artifactId>server-service</artifactId>
                 <version>${version}</version>
             </dependency>
 
@@ -107,6 +107,12 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jdk8</artifactId>
                 <version>2.11.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>7.8.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
